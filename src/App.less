@@ -1,0 +1,91 @@
+@import '~antd/dist/antd.less';
+
+.App {
+  font-family: -apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif,Apple Color Emoji,Segoe UI Emoji;
+}
+
+.trigger {
+  font-size: 20px;
+  line-height: 64px;
+  cursor: pointer;
+  transition: color 0.3s;
+}
+
+.trigger:hover {
+  color: #1890ff;
+}
+
+.ant-menu-item-active, .ant-menu-submenu-active{
+  transition: 1s;
+  background-color: #304156 !important;
+}
+
+.ant-layout-sider, .ant-menu.ant-menu-dark{
+  background: #192431 !important;
+}
+
+.ant-layout-sider {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 999;
+  overflow: hidden;
+}
+
+.ant-menu-sub {
+  background-color: #10161f !important;
+}
+
+.ant-menu-item, .ant-menu-submenu-title {
+  height: 50px !important;
+  line-height: 50px !important;
+  margin: 0 !important;
+}
+
+.ant-layout-sider-children {
+  padding: 15px 0;
+
+  .sidetop {
+    display: inline-block;
+    height: 32px;
+    padding: 0 25px;
+    margin-bottom: 10px;
+    overflow: hidden;  //加上就可以再trigger转换的时候隐藏多余的内容
+
+    .logo {
+      height: 30px;
+      width: 30px;
+      margin-right: 15px;
+    }
+    
+    .sidetitle {
+      color: white;
+      font-size: 14px;
+      font-weight: 600;
+      line-height: 32px;
+      font-family: Avenir,Helvetica Neue,Arial,Helvetica,sans-serif;
+    }
+  }
+}
+
+.right-layout {
+  margin-left: 200px;
+
+  .header {
+    background: #fff;
+    padding: 0 30px !important;
+    display: flex;
+
+    .breadcrumb {
+      font-size: 15px;
+      margin-left: 30px;
+      line-height: 60px;
+      transition: 1s;
+    }
+  }
+
+  .mainContent {
+    padding: 50px 40px;
+  }
+}

@@ -1,0 +1,17 @@
+.editable-row .ant-form-item-explain {
+  position: absolute;
+  top: 100%;
+  font-size: 12px;
+}
+.tableTop {
+  height: 32px;
+  padding-left: 10px;
+  margin-bottom: 15px !important;
+}
+.tableTop .sum {
+  float: left;
+  line-height: 40px;
+}
+.tableTop .addBtn {
+  float: right;
+}
