@@ -3,6 +3,9 @@
   top: 100%;
   font-size: 12px;
 }
+.ant-table-cell {
+  padding: 10px 16px !important;
+}
 .tableTop {
   height: 32px;
   padding-left: 10px;

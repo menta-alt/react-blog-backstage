@@ -1,14 +1,4 @@
-.md {
-  height: 460px !important;
-}
-.publish {
-  margin-bottom: 20px;
-}
-.publish input {
-  width: 600px;
-  margin-right: 15px;
-}
-.mask {
+.addMask {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -17,29 +7,27 @@
   bottom: 0;
   left: 0;
   right: 0;
-  width: 100%;
-  height: 100%;
   background: rgba(0, 0, 0, 0.4);
-  z-index: 1000;
+  z-index: 2000;
 }
-.nomask {
-  display: none;
-}
-.publishCard {
+.addMask .addCard {
   width: 600px;
   padding: 10px 20px 15px;
   background: white;
 }
-.publishCard .top {
+.addMask .addCard .top {
   display: flex;
   justify-content: space-between;
   margin-bottom: 30px;
 }
-.publishCard .top h3 {
+.addMask .addCard .top h3 {
   margin: 0;
 }
-.publishCard .top .closeBtn {
+.addMask .addCard .top .closeBtn {
   cursor: pointer;
   line-height: 26px;
   color: #bbb;
+}
+.nomask {
+  display: none;
 }

@@ -1,19 +1,11 @@
 import React, { useState } from 'react'
+import { Link } from 'react-router-dom'
+import moment from 'moment'
 import { Table, Input, InputNumber, Popconfirm, Form, Typography, Button } from 'antd'
 import { PlusCircleOutlined } from '@ant-design/icons'
 import './index.less'
-import { Link } from 'react-router-dom'
+import AddMask from '@/components/AddMask'
 
-const originData = []
-
-for (let i = 1; i <= 10; i++) {
-  originData.push({
-    key: i.toString(),
-    name: `Edrward ${i}`,
-    time: '2022-07-10',
-    count: `${i}`
-  })
-}
 
 // 创建表格的单元格
 const EditableCell = ({ editing, dataIndex, title, inputType, record, index, children, ...restProps }) => {
@@ -43,19 +35,16 @@ const EditableCell = ({ editing, dataIndex, title, inputType, record, index, chi
 }
 
 // 创建表格组件
-const EditableTable = () => {
+const EditableTable = (props) => {
+  const {setClickAdd, data, setData} = props
   const [form] = Form.useForm()
-  const [data, setData] = useState(originData)
   const [editingKey, setEditingKey] = useState('')
-  const [id, setId] = useState(originData.length)
-
+  
   const isEditing = record => record.key === editingKey
 
   const edit = record => {
     form.setFieldsValue({
       name: '',
-      time: '',
-      count: '',
       ...record
     })
     setEditingKey(record.key)
@@ -86,18 +75,8 @@ const EditableTable = () => {
     }
   }
 
-  // 处理添加一行数据到表格
   const handleAdd = () => {
-
-    const newData = {
-      key: (id+1).toString(),
-      name: `Edrward ${id+1}`,
-      time: '2022-12-10',
-      count: `${id+1}`
-    }
-    
-    setId(id + 1)
-    setData([newData, ...data])
+    setClickAdd(true)
   }
 
   // 列的配置
@@ -113,7 +92,7 @@ const EditableTable = () => {
     {
       key: '2',
       title: '创建时间',
-      dataIndex: 'time',
+      dataIndex: 'createTime',
       width: '25%',
       align: 'center'
     },
@@ -215,10 +194,48 @@ const EditableTable = () => {
   )
 }
 
+
 export default function TagManage() {
+  const [clickAdd, setClickAdd] = useState(false)
+  const [data, setData] = useState([])
+  const [id, setId] = useState(data.length)
+
+  // 处理添加一行数据到表格
+  const onFinish = values => {
+    const newData = {
+      key: (id + 1).toString(),
+      name: values.tagName,
+      createTime: moment().format('YYYY-MM-DD HH:mm:ss'),
+      count: 0
+    }
+    setId(id + 1)
+    setData([newData, ...data])
+    setClickAdd(false)
+  }
+
   return (
     <div>
-      <EditableTable />
+      <EditableTable 
+        setClickAdd={setClickAdd}
+        data={data}
+        setData={setData}
+        id={id}
+        setId={setId}
+      />
+      <AddMask 
+        clickAdd={clickAdd}
+        setClickAdd={setClickAdd}
+        title='添加标签'
+        info={
+          [
+            {
+              label: '标签名',
+              name: 'tagName'
+            }
+          ]
+        }
+        onFinish={onFinish}
+      />
     </div>
   )
 }

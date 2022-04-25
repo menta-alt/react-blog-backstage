@@ -3,6 +3,8 @@ import { Table, Input, InputNumber, Popconfirm, Form, Typography, Button } from 
 import { PlusCircleOutlined } from '@ant-design/icons'
 import './index.less'
 import { Link } from 'react-router-dom'
+import moment from 'moment'
+import AddMask from '@/components/AddMask'
 
 const originData = [
   {
@@ -60,11 +62,10 @@ const EditableCell = ({ editing, dataIndex, title, inputType, record, index, chi
 }
 
 // 创建表格组件
-const EditableTable = () => {
+const EditableTable = (props) => {
+  const {setClickAdd, data, setData} = props
   const [form] = Form.useForm()
-  const [data, setData] = useState(originData)
   const [editingKey, setEditingKey] = useState('')
-  const [id, setId] = useState(originData.length)
 
   const isEditing = record => record.key === editingKey
 
@@ -102,16 +103,8 @@ const EditableTable = () => {
     }
   }
 
-  // 处理添加一行数据到表格
   const handleAdd = () => {
-    const newData = {
-      key: (id + 1).toString(),
-      time: '2022-12-29',
-      description: '小小喝红茶'
-    }
-
-    setId(id + 1)
-    setData([newData, ...data])
+    setClickAdd(true)
   }
 
   // 列的配置
@@ -119,7 +112,7 @@ const EditableTable = () => {
     {
       title: '时间',
       dataIndex: 'time',
-      width: '15%',
+      width: '20%',
       align: 'center',
       editable: true,
       sorter: (a, b) => {
@@ -135,7 +128,7 @@ const EditableTable = () => {
       dataIndex: 'description',
       align: 'center',
       editable: true,
-      width: '60%'
+      width: '55%'
     },
     {
       title: '操作',
@@ -227,12 +220,47 @@ const EditableTable = () => {
   )
 }
 
-export default function LogManage() {
 
+export default function LogManage() {
+  const [clickAdd, setClickAdd] = useState(false)
+  const [data, setData] = useState([])
+  const [id, setId] = useState(data.length)
+
+  // 处理添加一行数据到表格
+  const onFinish = values => {
+    const newData = {
+      key: (id + 1).toString(),
+      time: moment().format('YYYY-MM-DD HH:mm:ss'),
+      description: values.logInfo,
+    }
+    setId(id + 1)
+    setData([newData, ...data])
+    setClickAdd(false)
+  }
   
   return (
     <div>
-      <EditableTable />
+      <EditableTable 
+        setClickAdd={setClickAdd}
+        data={data}
+        setData={setData}
+        id={id}
+        setId={setId}
+      />
+      <AddMask 
+        clickAdd={clickAdd}
+        setClickAdd={setClickAdd}
+        title='添加日志'
+        info={
+          [
+            {
+              label: '日志详情描述',
+              name: 'logInfo'
+            }
+          ]
+        }
+        onFinish={onFinish}
+      />
     </div>
   )
 }
