@@ -1,38 +1,12 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Table, Input, InputNumber, Popconfirm, Form, Typography, Button } from 'antd'
 import { PlusCircleOutlined } from '@ant-design/icons'
 import './index.less'
 import { Link } from 'react-router-dom'
+import { httpGet, httpPost } from '@/utils/api/axios'
 import moment from 'moment'
 import AddMask from '@/components/AddMask'
 
-const originData = [
-  {
-    key: '1',
-    time: '2022-12-11',
-    description: '使用 React.memo 优化部分组件对于频繁显示/隐藏的组件，改为使用 CSS 实现修改添加 emoji 表情为复制到剪切板啊烦恼'
-  },
-  {
-    key: '2',
-    time: '2022-12-08',
-    description: '使用 React.memo 优化部分组件对于频繁显示/隐藏的组件，改为使用 CSS 实现修改添加 emoji 表情为复制到剪切板啊烦恼'
-  },
-  {
-    key: '3',
-    time: '2022-11-29',
-    description: '使用 React.memo 优化部分组件对于频繁显示/隐藏的组件，改为使用 CSS 实现修改添加 emoji 表情为复制到剪切板啊烦恼'
-  },
-  {
-    key: '4',
-    time: '2022-10-20',
-    description: '使用 React.memo 优化部分组件对于频繁显示/隐藏的组件，改为使用 CSS 实现修改添加 emoji 表情为复制到剪切板啊烦恼'
-  },
-  {
-    key: '5',
-    time: '2022-06-29',
-    description: '使用 React.memo 优化部分组件对于频繁显示/隐藏的组件，改为使用 CSS 实现修改添加 emoji 表情为复制到剪切板啊烦恼'
-  }
-]
 
 // 创建表格的单元格
 const EditableCell = ({ editing, dataIndex, title, inputType, record, index, children, ...restProps }) => {
@@ -71,7 +45,6 @@ const EditableTable = (props) => {
 
   const edit = record => {
     form.setFieldsValue({
-      time: '',
       description: '',
       ...record
     })
@@ -111,13 +84,12 @@ const EditableTable = (props) => {
   const columns = [
     {
       title: '时间',
-      dataIndex: 'time',
+      dataIndex: 'createTime',
       width: '20%',
       align: 'center',
-      editable: true,
       sorter: (a, b) => {
-        let aTimeString = a.time
-        let bTimeString = b.time
+        let aTimeString = a.createTime
+        let bTimeString = b.createTime
         let aTime = new Date(aTimeString).getTime()
         let bTime = new Date(bTimeString).getTime()
         return aTime - bTime
@@ -224,18 +196,42 @@ const EditableTable = (props) => {
 export default function LogManage() {
   const [clickAdd, setClickAdd] = useState(false)
   const [data, setData] = useState([])
-  const [id, setId] = useState(data.length)
+
+  useEffect(() => {
+    httpGet('/logs').then( res => setData(formatData(res)) )
+  },[])
+
+  // 处理请求的数据为要展示的内容 data为array
+  const formatData = (data) => {
+    let logsData = []
+    data.forEach( item => {
+      logsData.push(
+        {
+          key: item.id.toString(),
+          description: item.description,
+          createTime: item.createTime,
+          count: 0
+        }
+      )
+    })
+        
+    return logsData
+  }
 
   // 处理添加一行数据到表格
   const onFinish = values => {
-    const newData = {
-      key: (id + 1).toString(),
-      time: moment().format('YYYY-MM-DD HH:mm:ss'),
-      description: values.logInfo,
-    }
-    setId(id + 1)
-    setData([newData, ...data])
     setClickAdd(false)
+
+    httpPost('/logs/publish', { description: values.logInfo }).then(res => {
+      const newData = {
+        key: res.id,
+        description: res.description,
+        createTime: res.createTime,
+        count: 0
+      }
+
+      setData([newData, ...data])
+    })
   }
   
   return (
@@ -244,8 +240,6 @@ export default function LogManage() {
         setClickAdd={setClickAdd}
         data={data}
         setData={setData}
-        id={id}
-        setId={setId}
       />
       <AddMask 
         clickAdd={clickAdd}

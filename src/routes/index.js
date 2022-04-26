@@ -4,7 +4,7 @@ import { Navigate } from 'react-router-dom'
 const Home = lazy(() => import('@/pages/Home'))
 const WriteBlog = lazy(() => import('@/pages/WriteBlog/'))
 const BlogManage = lazy(() => import('@/pages/BlogManage'))
-const ClassManage = lazy(() => import('@/pages/ClassManage'))
+const CategoryManage = lazy(() => import('@/pages/CategoryManage'))
 const LogManage = lazy(() => import('@/pages/LogManage/'))
 const TagManage = lazy(() => import('@/pages/TagManage/'))
 const MessageManage = lazy(() => import('@/pages/MessageManage/'))
@@ -32,7 +32,7 @@ const routes = [
   },
   {
     path: '/content/classes',
-    element: <ClassManage/>
+    element: <CategoryManage/>
   },
   {
     path: '/content/message',

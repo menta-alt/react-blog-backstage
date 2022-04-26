@@ -1,10 +1,9 @@
-import React, { useState } from 'react'
-import { Table, Input, InputNumber, Popconfirm, Form, Typography, Button,Tag } from 'antd'
+import React, { useState, useEffect } from 'react'
+import { Table, Input, InputNumber, Popconfirm, Form, Typography, Button } from 'antd'
 import { PlusCircleOutlined } from '@ant-design/icons'
+import { httpGet, httpPost } from '@/utils/api/axios'
 import './index.less'
-import moment from 'moment'
 import AddMask from '@/components/AddMask'
-
 
 // 创建表格的单元格
 const EditableCell = ({ editing, dataIndex, title, inputType, record, index, children, ...restProps }) => {
@@ -34,8 +33,8 @@ const EditableCell = ({ editing, dataIndex, title, inputType, record, index, chi
 }
 
 // 创建表格组件
-const EditableTable = (props) => {
-  const {setClickAdd, data, setData} = props
+const EditableTable = props => {
+  const { setClickAdd, data, setData } = props
   const [form] = Form.useForm()
   const [editingKey, setEditingKey] = useState('')
 
@@ -81,43 +80,29 @@ const EditableTable = (props) => {
   // 列的配置
   const columns = [
     {
+      key: '1',
       title: '专栏名',
       dataIndex: 'name',
-      width: '25%',
+      width: '35%',
       editable: true,
       align: 'center'
     },
     {
+      key: '2',
       title: '创建时间',
       dataIndex: 'createTime',
-      width: '20%',
+      width: '25%',
       align: 'center'
     },
     {
-      title: '所属标签',
-      dataIndex: 'tags',
-      width: '30%',
-      align: 'center',
-      render: tags => (
-        <>
-          {tags.map(tag => {
-            let color = tag.length > 5 ? 'geekblue' : 'green';
-            return (
-              <Tag color={color} key={tag} style={{fontSize: 14}}>
-                {tag}
-              </Tag>
-            );
-          })}
-        </>
-      ),
-    },
-    {
+      key: '3',
       title: '文章数',
       dataIndex: 'count',
-      width: '8%',
+      width: '15%',
       align: 'center'
     },
     {
+      key: '4',
       title: '操作',
       dataIndex: 'operation',
       align: 'center',
@@ -139,16 +124,27 @@ const EditableTable = (props) => {
           </span>
         ) : (
           <span>
-            <Typography.Link
+            <Button
+              type="primary"
               disabled={editingKey !== ''}
               onClick={() => edit(record)}
               style={{
-                marginRight: 15
+                marginRight: 15,
+                width: 70
               }}
             >
               Edit
-            </Typography.Link>
-            <Typography.Link style={{ color: 'red' }}>delete</Typography.Link>
+            </Button>
+
+            <Button
+              type="primary"
+              danger
+              style={{
+                width: 70
+              }}
+            >
+              delete
+            </Button>
           </span>
         )
       }
@@ -199,42 +195,59 @@ const EditableTable = (props) => {
 export default function ClassManage() {
   const [clickAdd, setClickAdd] = useState(false)
   const [data, setData] = useState([])
-  const [id, setId] = useState(data.length)
 
-    // 处理添加一行数据到表格
-    const onFinish = values => {
+  useEffect(() => {
+    httpGet('/categories').then(res => setData(formatData(res)))
+  }, [])
+
+  // 处理请求的数据为要展示的内容 data为array
+  const formatData = data => {
+    let categoryData = []
+    data.forEach(item => {
+      categoryData.push({
+        key: item.id.toString(),
+        name: item.categoryName,
+        createTime: item.createTime,
+        count: 0
+      })
+    })
+
+    return categoryData
+  }
+
+  // 处理添加一行数据到表格
+  const onFinish = values => {
+    setClickAdd(false)
+    console.log("values,",values);
+    httpPost('/categories/publish', { categoryName: values.categoryName }).then(res => {
       const newData = {
-        key: (id + 1).toString(),
-        name: values.className,
-        createTime: moment().format('YYYY-MM-DD HH:mm:ss'),
-        tags: ['webpack', 'js'],
+        key: res.id,
+        name: res.categoryName,
+        createTime: res.createTime,
         count: 0
       }
-      setId(id + 1)
+
       setData([newData, ...data])
-      setClickAdd(false)
-    }
+    })
+  }
 
   return (
     <div>
       <EditableTable 
-        setClickAdd={setClickAdd}
-        data={data}
-        setData={setData}
-        id={id}
-        setId={setId}/>
-      <AddMask 
+        setClickAdd={setClickAdd} 
+        data={data} 
+        setData={setData}  
+      />
+      <AddMask
         clickAdd={clickAdd}
         setClickAdd={setClickAdd}
-        title='添加专栏'
-        info={
-          [
-            {
-              label: '专栏名',
-              name: 'className'
-            }
-          ]
-        }
+        title="添加专栏"
+        info={[
+          {
+            label: '专栏名',
+            name: 'categoryName'
+          }
+        ]}
         onFinish={onFinish}
       />
     </div>

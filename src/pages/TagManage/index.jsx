@@ -1,6 +1,7 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import moment from 'moment'
+import { httpGet, httpPost } from '@/utils/api/axios'
 import { Table, Input, InputNumber, Popconfirm, Form, Typography, Button } from 'antd'
 import { PlusCircleOutlined } from '@ant-design/icons'
 import './index.less'
@@ -198,19 +199,43 @@ const EditableTable = (props) => {
 export default function TagManage() {
   const [clickAdd, setClickAdd] = useState(false)
   const [data, setData] = useState([])
-  const [id, setId] = useState(data.length)
+
+  useEffect(() => {
+    httpGet('/tags').then( res => setData(formatData(res)) )
+  },[])
+
+  // 处理请求的数据为要展示的内容 data为array
+  const formatData = (data) => {
+    let tagsData = []
+    data.forEach( item => {
+      tagsData.push(
+        {
+          key: item.id.toString(),
+          name: item.tagName,
+          createTime: item.createTime,
+          count: 0
+        }
+      )
+    })
+       
+    return tagsData
+  }
 
   // 处理添加一行数据到表格
   const onFinish = values => {
-    const newData = {
-      key: (id + 1).toString(),
-      name: values.tagName,
-      createTime: moment().format('YYYY-MM-DD HH:mm:ss'),
-      count: 0
-    }
-    setId(id + 1)
-    setData([newData, ...data])
+
     setClickAdd(false)
+
+    httpPost('/tags/publish', { tagName: values.tagName }).then(res => {
+      const newData = {
+        key: res.id,
+        name: res.tagName,
+        createTime: res.createTime,
+        count: 0
+      }
+
+      setData([newData, ...data])
+    })
   }
 
   return (
@@ -219,8 +244,6 @@ export default function TagManage() {
         setClickAdd={setClickAdd}
         data={data}
         setData={setData}
-        id={id}
-        setId={setId}
       />
       <AddMask 
         clickAdd={clickAdd}
