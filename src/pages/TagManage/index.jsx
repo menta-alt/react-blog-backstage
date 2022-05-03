@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import moment from 'moment'
+import store from '@/redux/store.js'
+import { addTag, deleteTag } from '@/redux/actions/tags.js'
 import { httpGet, httpPost } from '@/utils/api/axios'
 import { Table, Input, InputNumber, Popconfirm, Form, Typography, Button } from 'antd'
 import { PlusCircleOutlined } from '@ant-design/icons'
@@ -76,7 +77,15 @@ const EditableTable = (props) => {
     }
   }
 
-  const handleAdd = () => {
+  const deleteHandler = (record) => {
+    httpPost(`/content/tag/${record.key}`).then(() => {
+      let res = data.filter((item) => ( item.key !== record.key ))
+      setData(res)
+      store.dispatch(deleteTag(record.name))
+    })
+  }
+  
+  const addHandler = () => {
     setClickAdd(true)
   }
 
@@ -142,6 +151,7 @@ const EditableTable = (props) => {
             <Button
               type="primary"
               danger
+              onClick={() => deleteHandler(record)}
               style={{
                 width: 70
               }}
@@ -175,7 +185,7 @@ const EditableTable = (props) => {
     <Form form={form} component={false}>
       <div className="tableTop">
         <span className="sum">总共 : {data.length} 项</span>
-        <Button onClick={handleAdd} type="primary" className="addBtn" icon={<PlusCircleOutlined />}>
+        <Button onClick={addHandler} type="primary" className="addBtn" icon={<PlusCircleOutlined/>}>
           Add
         </Button>
       </div>
@@ -201,7 +211,9 @@ export default function TagManage() {
   const [data, setData] = useState([])
 
   useEffect(() => {
-    httpGet('/tags').then( res => setData(formatData(res)) )
+    httpGet('/tags').then( res => {
+      setData(formatData(res)) 
+    })
   },[])
 
   // 处理请求的数据为要展示的内容 data为array
@@ -235,6 +247,7 @@ export default function TagManage() {
       }
 
       setData([newData, ...data])
+      store.dispatch(addTag(res.tagName))
     })
   }
 

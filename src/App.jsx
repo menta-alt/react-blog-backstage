@@ -3,8 +3,7 @@ import { Link, useRoutes, useNavigate } from 'react-router-dom'
 import ErrorBoundary from '@/components/ErrorBoundary';
 import routes from '@/routes/'
 import { Layout, Menu, Breadcrumb } from 'antd'
-import {  } from 'react-router-dom';
-import { HomeFilled, MenuUnfoldOutlined, MenuFoldOutlined, SettingFilled, FileTextFilled, TagsFilled, MessageFilled, ProfileFilled, ScheduleFilled, HddFilled,HighlightOutlined } from '@ant-design/icons'
+import { HomeFilled, MenuUnfoldOutlined, MenuFoldOutlined, SettingFilled, FileTextFilled, TagsFilled, MessageFilled, ProfileFilled, ScheduleFilled, HddFilled,HighlightOutlined, RadarChartOutlined,SmileOutlined,TrophyOutlined,CrownOutlined } from '@ant-design/icons'
 
 import './App.less'
 import '@/style/base.css'
@@ -54,7 +53,11 @@ function App() {
         break
 
       case '专栏管理':
-        navigate('/content/classes')
+        navigate('/content/category')
+        break
+
+      case '作品管理':
+        navigate('/content/work')
         break
 
       case '留言管理':
@@ -63,6 +66,14 @@ function App() {
 
       case '日志管理':
         navigate('/content/log')
+        break
+
+      case '关于我':
+        navigate('/content/aboutme')
+        break
+
+      case '关于站点':
+        navigate('/content/aboutsite')
         break
 
       default:
@@ -103,14 +114,26 @@ function App() {
               <Menu.Item key="专栏管理" icon={<HddFilled />}>
                 专栏管理
               </Menu.Item>
+              <Menu.Item key="作品管理" icon={<TrophyOutlined />}>
+                作品管理
+              </Menu.Item>
               <Menu.Item key="留言管理" icon={<MessageFilled />}>
                 留言管理
               </Menu.Item>
               <Menu.Item key="日志管理" icon={<ScheduleFilled />}>
                 日志管理
               </Menu.Item>
+              <SubMenu key="关于管理" icon={<CrownOutlined />} title="关于管理" onClick={handleRoutes}>
+                <Menu.Item key="关于我" icon={<SmileOutlined />}>
+                  关于我
+                </Menu.Item>
+                <Menu.Item key="关于站点" icon={<RadarChartOutlined />}>
+                  关于站点
+              </Menu.Item>
+              </SubMenu>
             </SubMenu>
           </Menu>
+          <div className="footer"></div>
         </Sider>
 
         <Layout className="right-layout">

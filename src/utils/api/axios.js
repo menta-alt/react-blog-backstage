@@ -41,7 +41,6 @@ export const httpGet = (url, params = {}) => {
       method:'get',
       params
     }).then (res => {
-      console.log(res.headers);
       resolve(res.data)
     }).catch (err => {
       reject(err)

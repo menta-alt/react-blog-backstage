@@ -1,73 +1,10 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Table, Input, InputNumber, Popconfirm, Form, Typography, Button } from 'antd'
-import { PlusOutlined } from '@ant-design/icons'
+import { PlusOutlined, SearchOutlined } from '@ant-design/icons'
+import { httpGet, httpPost } from '@/utils/api/axios'
 import './index.less'
 
 const { Search } = Input
-
-// 一定要有key 值，不然改变的时候全部变了
-const originData = [
-  {
-    key: '1',
-    title: 'java',
-    time: '2022-04-28 13:14:09',
-    readCount: '123',
-    classes: '前端基础',
-    tag: 'html',
-    url: 'http://baidu.com',
-    status: 'publish'
-  },
-  {
-    key: '2',
-    title: 'js',
-    time: '2022-04-29 13:14:09',
-    readCount: '1024',
-    classes: '前端基础',
-    tag: 'html',
-    url: 'http://baidu.com',
-    status: 'publish'
-  },
-  {
-    key: '3',
-    title: 'html',
-    time: '2022-04-27 13:14:09',
-    readCount: '523',
-    classes: '前端基础',
-    tag: 'html',
-    url: 'http://baidu.com',
-    status: 'publish'
-  },
-  {
-    key: '4',
-    title: 'html5',
-    time: '2022-04-26 13:14:09',
-    readCount: '12',
-    classes: '前端基础',
-    tag: 'html',
-    url: 'http://baidu.com',
-    status: 'publish'
-  },
-  {
-    key: '5',
-    title: 'vue',
-    time: '2022-04-24 13:14:09',
-    readCount: '87',
-    classes: '前端基础',
-    tag: 'html',
-    url: 'http://baidu.com',
-    status: 'publish'
-  },
-  {
-    key: '6',
-    title: 'vite',
-    time: '2022-04-23 13:14:09',
-    readCount: '45',
-    classes: '前端基础',
-    tag: 'html',
-    url: 'http://baidu.com',
-    status: 'publish'
-  }
-]
 
 // 创建表格的单元格
 const EditableCell = ({ editing, dataIndex, title, inputType, record, index, children, ...restProps }) => {
@@ -97,9 +34,9 @@ const EditableCell = ({ editing, dataIndex, title, inputType, record, index, chi
 }
 
 // 创建表格组件
-const EditableTable = () => {
+const EditableTable = props => {
+  const { data, setData } = props
   const [form] = Form.useForm()
-  const [data, setData] = useState(originData)
   const [editingKey, setEditingKey] = useState('')
   const [result, setResult] = useState()
   const [isSearch, setIsSearch] = useState(false)
@@ -109,10 +46,6 @@ const EditableTable = () => {
   const edit = record => {
     form.setFieldsValue({
       title: '',
-      time: '',
-      readCount: '',
-      classes: '',
-      tag: '',
       url: '',
       status: '',
       ...record
@@ -145,6 +78,13 @@ const EditableTable = () => {
     }
   }
 
+  const deleteHandler = record => {
+    httpPost(`/content/blog/${record.key}`).then(() => {
+      let res = data.filter(item => item.key !== record.key)
+      setData(res)
+    })
+  }
+
   // 列的配置
   const columns = [
     {
@@ -152,12 +92,12 @@ const EditableTable = () => {
       dataIndex: 'title',
       align: 'center',
       editable: true,
-      width: '18.75%'
+      width: '18%'
     },
     {
-      title: '时间',
-      dataIndex: 'time',
-      width: '10%',
+      title: '创建时间',
+      dataIndex: 'createTime',
+      width: '9%',
       align: 'center',
       sorter: (a, b) => {
         let aTimeString = a.time
@@ -171,12 +111,19 @@ const EditableTable = () => {
       title: '阅读量',
       dataIndex: 'readCount',
       align: 'center',
-      width: '6.25%',
+      width: '5%',
       sorter: (a, b) => a.readCount - b.readCount
     },
     {
-      title: '分类',
-      dataIndex: 'classes',
+      title: '评论量',
+      dataIndex: 'commentCounts',
+      align: 'center',
+      width: '5%',
+      sorter: (a, b) => a.commentCounts - b.commentCounts
+    },
+    {
+      title: '专栏',
+      dataIndex: 'category',
       align: 'center',
       width: '12.75%'
     },
@@ -240,6 +187,7 @@ const EditableTable = () => {
               style={{
                 width: 70
               }}
+              onClick={() => deleteHandler(record)}
             >
               delete
             </Button>
@@ -268,9 +216,7 @@ const EditableTable = () => {
 
   // 处理搜索获得内容
   const onSearch = value => {
-    const newResult = data.filter((item) => (
-      item.title.includes(value)
-    ))
+    const newResult = data.filter(item => item.title.includes(value))
     setResult(newResult)
     setIsSearch(true)
   }
@@ -278,8 +224,20 @@ const EditableTable = () => {
   return (
     <Form form={form} component={false}>
       <div className="tableTop">
-        <Search placeholder="请输入关键词" onSearch={onSearch} enterButton className="searchInput" />
-        <span className="sum">总共 : {data.length} 篇文章</span>
+        <Search 
+          placeholder="请输入关键词" 
+          size="large" 
+          onSearch={onSearch} 
+          enterButton 
+          className="searchInput" 
+        />
+        <Button 
+          type="primary" 
+          size="large" 
+          className='showAllBtn'
+          onClick={() => {onSearch("")}}
+        >显示全部文章</Button> 
+        <span className="sum">总共 : {isSearch ? result.length : data.length} 篇文章</span>
       </div>
       <Table
         components={{
@@ -289,7 +247,7 @@ const EditableTable = () => {
         }}
         bordered
         scroll={{ x: 2000 }}
-        dataSource={ isSearch ? result : data }
+        dataSource={isSearch ? result : data}
         columns={mergedColumns}
         rowClassName="editable-row"
         pagination={false}
@@ -298,11 +256,62 @@ const EditableTable = () => {
   )
 }
 
-
 export default function BlogManage() {
+  const [data, setData] = useState([])
+  const [tagsList, setTagsList] = useState([])
+  const [category, setCategory] = useState('')
+
+  useEffect(() => {
+    httpGet('/articles').then(res => {
+      setData(formatData(res))
+
+      // httpPost('/categoryName', { "categoryId": res.categoryId }).then((categoryName) => {
+      //   setCategory(categoryName)
+      // })
+      // Promise.all([
+      //   new Promise((resolve, reject) => {
+      //     httpPost('/categoryName', { "categoryId": res.categoryId })
+      //     .then((categoryName) => {
+      //       resolve(categoryName)
+      //     })
+      //   }),
+
+      //   new Promise((resolve, reject) => {
+      //     httpPost('/tagsName', { "articleId": res.id })
+      //     .then((tags) => {
+      //       resolve(tags)
+      //     })
+      //   })
+      // ]).then(results => {
+      //   setCategory(results[0])
+      //   setTagsList(results[1])
+      // })
+    })
+  }, [])
+
+  // 处理请求的数据为要展示的内容 data为array
+  const formatData = data => {
+    let tagsData = []
+    data.forEach(item => {
+      tagsData.push({
+        key: item.id.toString(),
+        title: item.title,
+        createTime: item.createTime,
+        readCount: item.viewCounts,
+        commentCounts: item.commentCounts,
+        category: category,
+        tag: tagsList,
+        url: 'http://baidu.com',
+        status: 'publish'
+      })
+    })
+
+    return tagsData
+  }
+
   return (
     <div>
-      <EditableTable />
+      <EditableTable data={data} setData={setData} />
     </div>
   )
 }

@@ -73,7 +73,14 @@ const EditableTable = props => {
     }
   }
 
-  const handleAdd = () => {
+  const deleteHandler = (id) => {
+    httpPost(`/content/category/${id}`).then(() => {
+      let res = data.filter((item) => ( item.key !== id ))
+      setData(res)
+    })
+  }
+
+  const addHandler = () => {
     setClickAdd(true)
   }
 
@@ -142,6 +149,7 @@ const EditableTable = props => {
               style={{
                 width: 70
               }}
+              onClick={() => deleteHandler(record.key)}
             >
               delete
             </Button>
@@ -172,7 +180,7 @@ const EditableTable = props => {
     <Form form={form} component={false}>
       <div className="tableTop">
         <span className="sum">总共 : {data.length} 项</span>
-        <Button onClick={handleAdd} type="primary" className="addBtn" icon={<PlusCircleOutlined />}>
+        <Button onClick={addHandler} type="primary" className="addBtn" icon={<PlusCircleOutlined/>}>
           Add
         </Button>
       </div>

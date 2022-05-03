@@ -8,6 +8,9 @@ const CategoryManage = lazy(() => import('@/pages/CategoryManage'))
 const LogManage = lazy(() => import('@/pages/LogManage/'))
 const TagManage = lazy(() => import('@/pages/TagManage/'))
 const MessageManage = lazy(() => import('@/pages/MessageManage/'))
+const AboutMe = lazy(() => import('@/pages/AboutManage/AboutMe/'))
+const AboutSite = lazy(() => import('@/pages/AboutManage/AboutSite/'))
+const WorksManage = lazy(() => import('@/pages/WorksManage/'))
 
 const routes = [
   {
@@ -31,13 +34,25 @@ const routes = [
     element: <TagManage/>
   },
   {
-    path: '/content/classes',
+    path: '/content/category',
     element: <CategoryManage/>
   },
   {
     path: '/content/message',
     element: <MessageManage/>
   }, 
+  {
+    path: '/content/work',
+    element: <WorksManage/>
+  },
+  {
+    path: '/content/aboutme',
+    element: <AboutMe/>
+  },
+  {
+    path: '/content/aboutsite',
+    element: <AboutSite/>
+  },
   {
     path: '/',
     element: <Navigate to="/home"/> 

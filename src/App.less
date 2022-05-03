@@ -1,7 +1,7 @@
 @import '~antd/dist/antd.less';
 
 .App {
-  font-family: -apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif,Apple Color Emoji,Segoe UI Emoji;
+  font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Helvetica, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji;
 }
 
 .trigger {
@@ -15,29 +15,58 @@
   color: #1890ff;
 }
 
-.ant-menu-item-active, .ant-menu-submenu-active{
+.ant-menu-item-active,
+.ant-menu-submenu-active {
   transition: 1s;
   background-color: #304156 !important;
 }
 
-.ant-layout-sider, .ant-menu.ant-menu-dark{
+.ant-layout-sider,
+.ant-menu.ant-menu-dark {
   background: #192431 !important;
 }
 
+// 导航菜单
 .ant-layout-sider {
   position: fixed;
   top: 0;
   bottom: 0;
   left: 0;
   z-index: 999;
-  overflow: hidden;
+  overflow-y: scroll;
+  padding-bottom: 100px !important;
 }
+
+// 滚动条样式
+/*滚动条整体样式*/
+.ant-layout-sider::-webkit-scrollbar {
+  /*高宽分别对应横竖滚动条的尺寸*/
+  width: 1px;
+  height: 8px;
+}
+
+/*滚动条里面小方块*/
+.ant-layout-sider::-webkit-scrollbar-thumb {
+  border-radius: 10px;
+  background: #9e9e9e;
+  box-shadow: inset 0 0 5px #1890ff
+}
+
+/*滚动条底层颜色*/
+.ant-layout-sider::-webkit-scrollbar-track {
+  border-radius: 10px;
+  background: #ededed;
+  /*滚动条里面轨道*/
+  box-shadow: inset 0 0 5px rgba(0, 0, 0, .1);
+}
+
 
 .ant-menu-sub {
   background-color: #10161f !important;
 }
 
-.ant-menu-item, .ant-menu-submenu-title {
+.ant-menu-item,
+.ant-menu-submenu-title {
   height: 50px !important;
   line-height: 50px !important;
   margin: 0 !important;
@@ -51,22 +80,26 @@
     height: 32px;
     padding: 0 25px;
     margin-bottom: 10px;
-    overflow: hidden;  //加上就可以再trigger转换的时候隐藏多余的内容
+    overflow: hidden; //加上就可以再trigger转换的时候隐藏多余的内容
 
     .logo {
       height: 30px;
       width: 30px;
       margin-right: 15px;
     }
-    
+
     .sidetitle {
       color: white;
       font-size: 14px;
       font-weight: 600;
       line-height: 32px;
-      font-family: Avenir,Helvetica Neue,Arial,Helvetica,sans-serif;
+      font-family: Avenir, Helvetica Neue, Arial, Helvetica, sans-serif;
     }
   }
+}
+
+.footer {
+  height: 100px;
 }
 
 .right-layout {
